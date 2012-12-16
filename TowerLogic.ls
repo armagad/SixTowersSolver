@@ -1,3 +1,9 @@
+import prelude
+
+brickInStack = (currentBrick, nextBrick) ->
+  false
+  true if nextBrick.color is currentBrick.color and nextBrick.n is currentBrick.n + 1
+  
 TowerLogic = ($scope) ->
   $scope.solution = []
   $scope.towers   = [
@@ -14,22 +20,23 @@ TowerLogic = ($scope) ->
     affectedTowers = solver_nextMove $scope.towers
     $scope.moveBricks affectedTowers.0, affectedTowers.1
 
+  keyBrick = (towerIndex) ->
+    brick.depth = 1
+    fromBricks = @$scope.towers[(towerIndex)].bricks
+    while brick.depth < fromBricks.length and brickInStack fromBricks[brick.depth - 1], fromBricks[brick.depth]
+      brick.depth += 1
+    brick
+
   $scope.moveBricks = (iFrom, iTo) ->
-    howMany = 1
-    fromBricks = $scope.towers[iFrom].bricks
-    while howMany < fromBricks.length and brickInStack fromBricks[howMany - 1], fromBricks[howMany]
-      howMany += 1
-    brickStack = $scope.towers[iFrom].bricks.splice 0, howMany
+    brickStack = $scope.towers[iFrom].bricks.splice 0, (@keyBrick iForm).depth
     $scope.towers[iTo].bricks = brickStack.concat $scope.towers[iTo].bricks
-    $scope.solution.push {
-      text: 'Tower ' + iFrom + 1 + ' to Tower ' + iTo + 1
-      fromTower: iFrom
-      toTower: iTo
-    }
+    $scope.solution.push fromTower: iFrom toTower: iTo
 
   $scope.towerMove = (fromTower) ->
     toTower = solver_towersBestMove $scope.towers, fromTower
     $scope.moveBricks fromTower, toTower if not (toTower is -1)
+  
+  
 
 # class Solver
 #     puzzlesBextMove: ->

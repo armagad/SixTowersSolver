@@ -4,4 +4,5 @@ lsc -bo . TowerLogic.ls
 -Notes, Considerations, and Such
 While worrying about what the undo method should return it hit me that this probably still won't end up functional enough. For the sake of programmer's time I am going to end up maintaining two parallel states, which starts to defeat the purpose of using Angular in the first place.
 In an attempt to only absorb one new tech a time, I have written most of index.html (everything but the new puzzle inputter) first.
-Holy Shit!
+Holy Shit! - Ah-HA! http://js2ls.org/public/ Why don't I just decompile it.
+
