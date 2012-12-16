@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en" ng-app>
+<head>
+<meta charset="utf-8">
+<title>Six Tower World Champion Maker</title>
+<style>
+    h1,h2,h3{margin:0;padding:0;}
+    
+    h2{
+        text-align: right;
+    }
+    h3{
+        text-align: center;
+        margin: 2px auto ;
+    }
+    h3 a{
+        font-size: 10px;
+    }
+    body{
+        width : 1113px;
+        height: 100%;
+        margin:0 auto;padding:49px 7px 0 7px;
+        background-color:#EFEFEF;
+      
+    }
+    div.tower{
+        float:left;
+        width: 93px;
+        margin: 0 3px;
+        background-color: white;
+    }
+    p.brick{
+        margin:0;padding:0;
+        text-align: center;
+        padding-top: 6px;
+        height: 23px;
+        width : 133px;
+        border: 1px solid #888;
+        border-top: none;
+        border-bottom: 1px solid #333;
+        margin: 0 auto;
+        color:#FFF;
+        text-shadow: 2px 2px 2px #282828;
+        font-family:Ubuntu;
+        border-radius:3px;
+    }
+
+    p.warning{
+        background:yellow;padding: 8px 3px;
+        -webkit-animation: blink .75s linear infinite;
+    }
+
+    @-webkit-keyframes blink {
+        0%     { color: black; }
+        70%    { color: black; }
+        70.01% { color: yellow; }
+        100%   { color: yellow; }
+    }
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">
+<script>
+  
+function TowerLogic($scope) {
+    
+    $scope.solution = [];
+    $scope.towers = [
+    {index:0, bricks:[{n:3,color:"orange"},{n:6,color:"orange"},{n:1,color:"red"   },{n:0,color:"red"   },{n:0,color:"blue"  },{n:4,color:"cyan"  }]},
+    {index:1, bricks:[{n:3,color:"red"   },{n:0,color:"green" },{n:2,color:"red"   },{n:3,color:"cyan"  },{n:5,color:"cyan"  },{n:6,color:"cyan"  }]},
+    {index:2, bricks:[                     {n:4,color:"green" },{n:1,color:"cyan"  },{n:3,color:"violet"},{n:4,color:"violet"},{n:5,color:"violet"}]},
+    {index:3, bricks:[                     {n:0,color:"violet"},{n:1,color:"violet"},{n:2,color:"violet"},{n:1,color:"orange"},{n:2,color:"orange"}]},
+    {index:4, bricks:[                     {n:4,color:"orange"},{n:0,color:"orange"},{n:4,color:"red"   },{n:5,color:"red"   },{n:0,color:"cyan"  }]},
+    {index:5, bricks:[                     {n:3,color:"green" },{n:5,color:"orange"},{n:1,color:"green" },{n:2,color:"green" },{n:5,color:"green" }]},
+    {index:6, bricks:[                     {n:3,color:"blue"  },{n:4,color:"blue"  },{n:5,color:"blue"  },{n:6,color:"blue"  },{n:6,color:"violet"}]},
+    {index:7, bricks:[                     {n:2,color:"cyan"  },{n:6,color:"green" },{n:2,color:"blue"  },{n:6,color:"red"   },{n:1,color:"blue"  }]}];
+
+    $scope.checkSolver = function(){
+        var affectedTowers = solver_nextMove($scope.towers);
+        $scope.moveBricks(affectedTowers[0], affectedTowers[1]);
+    };
+
+    $scope.moveBricks = function(iFrom, iTo) {
+        var howMany = 1;
+        var fromBricks = $scope.towers[iFrom].bricks;
+        while(howMany < fromBricks.length &&  brickInStack(fromBricks[howMany-1], fromBricks[howMany])){
+            howMany += 1;
+        }
+        var brickStack = $scope.towers[iFrom].bricks.splice(0,howMany);
+        $scope.towers[iTo].bricks = brickStack.concat($scope.towers[iTo].bricks);
+        $scope.solution.push({text: "Tower "+ (iFrom+1) + " to Tower "+ (iTo+1), fromTower: iFrom,toTower: iTo}); 
+    };
+    
+    $scope.towerMove = function(fromTower) {
+        var toTower = solver_towersBestMove($scope.towers, fromTower);
+        if(toTower != -1) $scope.moveBricks(fromTower, toTower);
+    };
+}
+</script>
+</head>
+<body>
+    <div ng-controller="TowerLogic">
+        <p class="warning" style="display:none">
+            Solver uses recursion and you haven't set a max depth.</p>
+        <div class="tower" ng-repeat="tower in towers">
+            <h3 style="margin-bottom:{{360-tower.bricks.length*30}}px"># {{tower.index+1}}
+                 <a href="" ng-click="towerMove(tower.index)">Move</a></h3>
+                 
+            <p class="brick" ng-repeat="brick in tower.bricks" style="width:{{(brick.n+1)*11+3}}px;background-color:{{brick.color}}">{{brick.n}}</p></div>
+            
+        <div style="float:left;width:300px;margin-left:8px;">
+            <h1></h1>
+            <h2>Graph Size: {{}}</h2>
+            <p><a href="" ng-click="checkSolver()">Next</a></p>
+            <p>Penalty Points: {{solution.length}} of 
+                <input type="text" placeholder="max" style="font-size:inherit;width:35px;text-align:center;margin-left:4px" ng-model="penaltyMax"></p>
+
+            <ul style="height:560px;overflow:scroll">
+                <li ng-repeat="step in solution">Tower {{step.fromTower+1}} to Tower {{step.toTower+1}}</li></ul>
+        </div>
+    </div>
+</body>
+</html>
