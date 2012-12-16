@@ -1,5 +1,13 @@
 var brickInStack, TowerLogic;
 import$(this, prelude);
+angular.module('SomeApp', []).filter('numeric', function(){
+  return function(input){
+    if (input === '?') {
+      return 3;
+    }
+    return input;
+  };
+});
 brickInStack = function(currentBrick, nextBrick){
   false;
   if (nextBrick.color === currentBrick.color && nextBrick.n === currentBrick.n + 1) {
@@ -8,6 +16,15 @@ brickInStack = function(currentBrick, nextBrick){
 };
 TowerLogic = function($scope){
   var keyBrick;
+  keyBrick = function(towerIndex){
+    var fromBricks;
+    brick.depth = 1;
+    fromBricks = this.$scope.towers[towerIndex].bricks;
+    while (brick.depth < fromBricks.length && brickInStack(fromBricks[brick.depth - 1], fromBricks[brick.depth])) {
+      brick.depth += 1;
+    }
+    return brick;
+  };
   $scope.solution = [];
   $scope.towers = [
     {
@@ -183,14 +200,29 @@ TowerLogic = function($scope){
     affectedTowers = solver_nextMove($scope.towers);
     return $scope.moveBricks(affectedTowers[0], affectedTowers[1]);
   };
-  keyBrick = function(towerIndex){
-    var fromBricks;
-    brick.depth = 1;
-    fromBricks = this.$scope.towers[towerIndex].bricks;
-    while (brick.depth < fromBricks.length && brickInStack(fromBricks[brick.depth - 1], fromBricks[brick.depth])) {
-      brick.depth += 1;
-    }
-    return brick;
+  $scope.newPuzzle = function(){
+    var ref$, ref1$;
+    return $scope.towers = [
+      ref$ = {
+        index: 0,
+        bricks: [
+          ref1$ = {
+            n: '?',
+            color: 'grey'
+          }, ref1$, ref1$, ref1$, ref1$, ref1$
+        ]
+      }, ref$
+    ].concat([
+      ref$ = {
+        index: 0,
+        bricks: [
+          ref1$ = {
+            n: '?',
+            color: 'grey'
+          }, ref1$, ref1$, ref1$, ref1$
+        ]
+      }, ref$, ref$, ref$, ref$, ref$
+    ]);
   };
   $scope.moveBricks = function(iFrom, iTo){
     var brickStack;

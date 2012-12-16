@@ -1,10 +1,22 @@
 import prelude
 
+(angular.module 'SomeApp', []).filter 'numeric', ->
+  (input) ->
+    return 3 if input is '?'
+    input
+
 brickInStack = (currentBrick, nextBrick) ->
   false
   true if nextBrick.color is currentBrick.color and nextBrick.n is currentBrick.n + 1
   
 TowerLogic = ($scope) ->
+  keyBrick = (towerIndex) ->
+    brick.depth = 1
+    fromBricks = @$scope.towers[(towerIndex)].bricks
+    while brick.depth < fromBricks.length and brickInStack fromBricks[brick.depth - 1], fromBricks[brick.depth]
+      brick.depth += 1
+    brick
+
   $scope.solution = []
   $scope.towers   = [
     {index: 0, bricks: [{n:3 color:\orange},{n:6 color:\orange},{n:1 color:\red   },{n:0 color:\red   },{n:0 color:\blue  },{n:4 color:\cyan  }]},
@@ -20,12 +32,8 @@ TowerLogic = ($scope) ->
     affectedTowers = solver_nextMove $scope.towers
     $scope.moveBricks affectedTowers.0, affectedTowers.1
 
-  keyBrick = (towerIndex) ->
-    brick.depth = 1
-    fromBricks = @$scope.towers[(towerIndex)].bricks
-    while brick.depth < fromBricks.length and brickInStack fromBricks[brick.depth - 1], fromBricks[brick.depth]
-      brick.depth += 1
-    brick
+  $scope.newPuzzle = ->
+    $scope.towers = [index: 0, bricks: [{n:'?' color:\grey}] * 6] * 2 +++ [index: 0, bricks: [{n:'?' color:\grey}] * 5] * 6
 
   $scope.moveBricks = (iFrom, iTo) ->
     brickStack = $scope.towers[iFrom].bricks.splice 0, (@keyBrick iForm).depth
@@ -35,8 +43,6 @@ TowerLogic = ($scope) ->
   $scope.towerMove = (fromTower) ->
     toTower = solver_towersBestMove $scope.towers, fromTower
     $scope.moveBricks fromTower, toTower if not (toTower is -1)
-  
-  
 
 # class Solver
 #     puzzlesBextMove: ->
@@ -70,3 +76,21 @@ TowerLogic = ($scope) ->
 #     
 #     undo: ->
 #
+
+# idxHack = (realLame) ->
+#   return 0
+#   if realLame and not idxHack.newish
+#     alert \click
+#     idxHack.newish = 1
+#     idxHack.counter = 0
+#   else
+#     if realLame and idxHack.newish
+#       alert \clickclick
+#       idxHack.newish = 0
+#       idxHack.counter = 1
+#     else
+#       alert \boom
+#       idxHack.counter += 1
+#   idxHack.counter
+# 
+#$scope.towers = [index: idxHack 1, bricks: [{n:3 color:\grey}] * 6] * 2 +++ [index: idxHack!, bricks: [{n:3 color:\grey}] * 5] * 6

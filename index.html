@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="en" ng-app>
+<html lang="en" ng-app="SomeApp">
 <head>
 <meta charset="utf-8">
 <title>Six Tower World Champion Maker</title>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+
 <link rel="stylesheet" type="text/css" href="index.css">
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">
 <script src="prelude-browser-min.js"></script>
@@ -17,12 +18,12 @@
             <h3 style="margin-bottom:{{360-tower.bricks.length*30}}px"># {{tower.index+1}}
                  <a href="" ng-click="towerMove(tower.index)">Move</a></h3>
                  
-            <p class="brick" ng-repeat="brick in tower.bricks" style="width:{{(brick.n+1)*11+3}}px;background-color:{{brick.color}}">{{brick.n}}</p></div>
+            <p class="brick" ng-repeat="brick in tower.bricks" style="width:{{((brick.n|numeric) +1)*11+3}}px;background-color:{{brick.color}}">{{brick.n}}</p></div>
             
         <div style="float:left;width:300px;margin-left:8px;">
             <h1></h1>
             <h2>Graph Size: {{}}</h2>
-            <p><a href="" ng-click="checkSolver()">Clear Board</a></p>
+            <p><a href="" ng-click="newPuzzle()">Clear Board for Input</a></p>
             <p><a href="" ng-click="checkSolver()">Solve</a></p>
             <p><a href="" ng-click="checkSolver()">Move Once</a></p>
             <p>Penalty Points: {{solution.length}} of 
