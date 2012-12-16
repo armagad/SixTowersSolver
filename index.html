@@ -3,63 +3,11 @@
 <head>
 <meta charset="utf-8">
 <title>Six Tower World Champion Maker</title>
-<style>
-    h1,h2,h3{margin:0;padding:0;}
-    
-    h2{
-        text-align: right;
-    }
-    h3{
-        text-align: center;
-        margin: 2px auto ;
-    }
-    h3 a{
-        font-size: 10px;
-    }
-    body{
-        width : 1113px;
-        height: 100%;
-        margin:0 auto;padding:49px 7px 0 7px;
-        background-color:#EFEFEF;
-      
-    }
-    div.tower{
-        float:left;
-        width: 93px;
-        margin: 0 3px;
-        background-color: white;
-    }
-    p.brick{
-        margin:0;padding:0;
-        text-align: center;
-        padding-top: 6px;
-        height: 23px;
-        width : 133px;
-        border: 1px solid #888;
-        border-top: none;
-        border-bottom: 1px solid #333;
-        margin: 0 auto;
-        color:#FFF;
-        text-shadow: 2px 2px 2px #282828;
-        font-family:Ubuntu;
-        border-radius:3px;
-    }
-
-    p.warning{
-        background:yellow;padding: 8px 3px;
-        -webkit-animation: blink .75s linear infinite;
-    }
-
-    @-webkit-keyframes blink {
-        0%     { color: black; }
-        70%    { color: black; }
-        70.01% { color: yellow; }
-        100%   { color: yellow; }
-    }
-</style>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+<link rel="stylesheet" type="text/css" href="index.css">
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">
-<script src="./TowerLogic.js"></script>
+<script src="prelude-browser-min.js"></script>
+<script src="TowerLogic.js"></script>
 </head>
 <body>
     <div ng-controller="TowerLogic">
@@ -74,7 +22,9 @@
         <div style="float:left;width:300px;margin-left:8px;">
             <h1></h1>
             <h2>Graph Size: {{}}</h2>
-            <p><a href="" ng-click="checkSolver()">Next</a></p>
+            <p><a href="" ng-click="checkSolver()">Clear Board</a></p>
+            <p><a href="" ng-click="checkSolver()">Solve</a></p>
+            <p><a href="" ng-click="checkSolver()">Move Once</a></p>
             <p>Penalty Points: {{solution.length}} of 
                 <input type="text" placeholder="max" style="font-size:inherit;width:35px;text-align:center;margin-left:4px" ng-model="penaltyMax"></p>
 

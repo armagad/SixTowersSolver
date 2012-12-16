@@ -57,7 +57,7 @@ TowerLogic = function($scope){
         }
       ]
     }, {
-      index: 1,
+      index: 2,
       bricks: [
         {
           n: 4,
@@ -77,7 +77,7 @@ TowerLogic = function($scope){
         }
       ]
     }, {
-      index: 1,
+      index: 3,
       bricks: [
         {
           n: 0,
@@ -97,7 +97,7 @@ TowerLogic = function($scope){
         }
       ]
     }, {
-      index: 1,
+      index: 4,
       bricks: [
         {
           n: 4,
@@ -117,7 +117,7 @@ TowerLogic = function($scope){
         }
       ]
     }, {
-      index: 1,
+      index: 5,
       bricks: [
         {
           n: 3,
@@ -137,7 +137,7 @@ TowerLogic = function($scope){
         }
       ]
     }, {
-      index: 1,
+      index: 6,
       bricks: [
         {
           n: 3,
@@ -157,7 +157,7 @@ TowerLogic = function($scope){
         }
       ]
     }, {
-      index: 1,
+      index: 7,
       bricks: [
         {
           n: 2,
