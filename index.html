@@ -15,18 +15,19 @@
         <p class="warning" style="display:none">
             Solver uses recursion and you haven't set a max depth.</p>
         <div class="tower" ng-repeat="tower in towers">
-            <h3 style="margin-bottom:{{360-tower.bricks.length*30}}px"># {{tower.index+1}}
+            <h3 style="margin-bottom:{{390-tower.bricks.length*30}}px"># {{tower.index+1}}
                  <a href="" ng-click="towerMove(tower.index)">Move</a></h3>
-                 
-            <p class="brick" ng-repeat="brick in tower.bricks" style="width:{{((brick.n|numeric) +1)*11+3}}px;background-color:{{brick.color}}">{{brick.n}}</p></div>
-            
+
+            <p class="brick" ng-repeat="brick in tower.bricks" style="width:{{((brick.n|numeric) +1)*11+3}}px;background-color:{{brick.color}}">
+                {{brick.n}}</p></div>
+
         <div style="float:left;width:300px;margin-left:8px;">
             <h1></h1>
             <h2>Graph Size: {{}}</h2>
             <p><a href="" ng-click="newPuzzle()">Clear Board for Input</a></p>
-            <p><a href="" ng-click="checkSolver()">Solve</a></p>
-            <p><a href="" ng-click="checkSolver()">Move Once</a></p>
-            <p>Penalty Points: {{solution.length}} of 
+            <p><a href="" ng-click="solve()">Solve</a></p>
+            <p><a href="" ng-click="aiMove()">Move Once</a></p>
+            <p>Penalty Points: {{penaltyPoints}} of 
                 <input type="text" placeholder="max" style="font-size:inherit;width:35px;text-align:center;margin-left:4px" ng-model="penaltyMax"></p>
 
             <ul style="height:560px;overflow:scroll">
