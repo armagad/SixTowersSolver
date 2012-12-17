@@ -6,12 +6,8 @@
 import prelude
 
 moveTower = (puzzle, step) ->
-  $scope.towers[iTo].bricks = (let $_ = $scope.towers[iFrom].bricks
-    $_.splice 0, (keyBrick $_).depth) +++ $scope.towers[iTo].bricks
-
-  if not @solved
-    #$scope.solution.push fromTower: iFrom, toTower: iTo, penalty: 0
-    $scope.penaltyPoints = sum map (.penalty) $scope.solution
+  puzzle[step.iTo].bricks = (puzzle[step.iFrom].bricks.splice 0, step.depth) +++ puzzle[step.iTo].bricks
+  puzzle
 
 bestMoves = (puzzle) ->
   keyBricks = map (.bricks), puzzle |> map keyBrick
@@ -22,14 +18,30 @@ bestMoves = (puzzle) ->
   while i < 8
     j = 0
     while j < 8
-      return [penalty: 0 iFrom: i iTo: j] if brickInStack keyBricks[i], possibleTos[j]
+      return [penalty: 0, iFrom: i, iTo: j, depth: keyBricks[i].depth] if brickInStack keyBricks[i], possibleTos[j]
       j++
     i++
 
-  #better
-  
-  #good
-  []
+  return []
+  better = []
+  i = 0
+  while i < 8
+    j = 0
+    while j < 8
+      better+++ [penalty: 0, iFrom: i, iTo: j, depth: keyBricks[i].depth] if freeTowerPit keyBricks[i], possibleTos[j]
+      j++
+    i++
+
+  good= []
+  i = 0
+  while i < 8
+    j = 0
+    while j < 8
+      good+++ [penalty: 1, iFrom: i, iTo: j, depth: keyBricks[i].depth] if subOptimalMove keyBricks[i], possibleTos[j]
+      j++
+    i++
+
+  better +++ good
 
 isDoneOrEmpty = (towerBricks) ->
   return true if towerBricks.length is 0
@@ -37,13 +49,17 @@ isDoneOrEmpty = (towerBricks) ->
   false
 
 findSolution = (puzzle, steps) ->
+  window.globalsBad.callCount += 1
   return if window.globalsBad.solution is not [] and steps.length > window.globalsBad.solution.length
   return if window.globalsBad.penaltyMax < sum map (.penalty), steps
   if map (.bricks), puzzle |> all isDoneOrEmpty
     window.globalsBad.solution = steps
 
-  let $_ = bestMoves puzzle
-    findSolution moveTower $_, steps+++ $_ if $_
+  debugger
+  possibleNextSteps = bestMoves puzzle
+  i = 0
+  while i < possibleNextSteps.length
+    findSolution (moveTower puzzle, possibleNextSteps[i]), steps+++ possibleNextSteps[i]
 
 keyBrick = (towerBricks) ->
   depth = 1
@@ -56,11 +72,21 @@ brickInStack = (currentBrick, nextBrick) ->
   false
   true if nextBrick.color is currentBrick.color and nextBrick.n is currentBrick.n + 1
 
+freeTowerPit = (currentBrick, nextBrick) ->
+  return true if nextBrick is void and currentBrick.n is 6
+  false
+
+subOptimalMove = (currentBrick, nextBrick) ->
+  return true if nextBrick is void
+  return true if nextBrick.color is currentBrick.color and nextBrick.n > currentBrick.n
+  false
+
 TowerLogic = ($scope) ->
 
   $scope.solving = 0
-  $scope.maxPenalty = 25
+  $scope.penaltyMax = 25
   $scope.penaltyPoints = 0
+  $scope.callCount = 0
   $scope.solution = []
   $scope.towers   = [
     {index: 0, bricks: [{n:3 color:\orange},{n:6 color:\orange},{n:1 color:\red   },{n:0 color:\red   },{n:0 color:\blue  },{n:4 color:\cyan  }]},
@@ -73,10 +99,12 @@ TowerLogic = ($scope) ->
     {index: 7, bricks:                     [{n:2 color:\cyan  },{n:6 color:\green },{n:2 color:\blue  },{n:6 color:\red   },{n:1 color:\blue  }]}]
 
   $scope.solve = ->
+    debugger
     window.globalsBad = $scope
     $scope.solving = 1
     $scope.solution = []
-    $scope.solved = findSolution @towers, [] |> (.length)
+    debugger
+    $scope.solved = findSolution $scope.towers, [] |> (.length)
     $scope.solving = 0
 
   $scope.aiMove = ->

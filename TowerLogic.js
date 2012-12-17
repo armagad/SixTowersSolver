@@ -1,4 +1,4 @@
-var bestMove, isDoneOrEmpty, findSolution, keyBrick, brickInStack, TowerLogic;
+var moveTower, bestMoves, isDoneOrEmpty, findSolution, keyBrick, brickInStack, freeTowerPit, subOptimalMove, TowerLogic;
 angular.module('SomeApp', []).filter('numeric', function(){
   return function(input){
     if (input === '?') {
@@ -8,7 +8,73 @@ angular.module('SomeApp', []).filter('numeric', function(){
   };
 });
 import$(this, prelude);
-bestMove = function(puzzle){};
+moveTower = function(puzzle, step){
+  puzzle[step.iTo].bricks = puzzle[step.iFrom].bricks.splice(0, step.depth).concat(puzzle[step.iTo].bricks);
+  return puzzle;
+};
+bestMoves = function(puzzle){
+  var keyBricks, possibleTos, i, j, better, good;
+  keyBricks = map(keyBrick)(
+  map(function(it){
+    return it.bricks;
+  }, puzzle));
+  possibleTos = map(head)(
+  map(function(it){
+    return it.bricks;
+  }, puzzle));
+  i = 0;
+  while (i < 8) {
+    j = 0;
+    while (j < 8) {
+      if (brickInStack(keyBricks[i], possibleTos[j])) {
+        return [{
+          penalty: 0,
+          iFrom: i,
+          iTo: j,
+          depth: keyBricks[i].depth
+        }];
+      }
+      j++;
+    }
+    i++;
+  }
+  return [];
+  better = [];
+  i = 0;
+  while (i < 8) {
+    j = 0;
+    while (j < 8) {
+      if (freeTowerPit(keyBricks[i], possibleTos[j])) {
+        better.concat([{
+          penalty: 0,
+          iFrom: i,
+          iTo: j,
+          depth: keyBricks[i].depth
+        }]);
+      }
+      j++;
+    }
+    i++;
+  }
+  good = [];
+  i = 0;
+  while (i < 8) {
+    j = 0;
+    while (j < 8) {
+      if (subOptimalMove(keyBricks[i], possibleTos[j])) {
+        good.concat([{
+          penalty: 1,
+          iFrom: i,
+          iTo: j,
+          depth: keyBricks[i].depth
+        }]);
+      }
+      j++;
+    }
+    i++;
+  }
+  return better.concat(good);
+};
 isDoneOrEmpty = function(towerBricks){
   if (towerBricks.length === 0) {
     return true;
@@ -27,6 +93,8 @@ isDoneOrEmpty = function(towerBricks){
   return false;
 };
 findSolution = function(puzzle, steps){
+  var possibleNextSteps, i, results$ = [];
+  window.globalsBad.callCount += 1;
   if (window.globalsBad.solution !== [] && steps.length > window.globalsBad.solution.length) {
     return;
   }
@@ -41,22 +109,22 @@ findSolution = function(puzzle, steps){
   }, puzzle))) {
     window.globalsBad.solution = steps;
   }
-  return (function($_){
-    if ($_) {
-      return findSolution($_.puzzle, steps.concat($_.step));
-    }
-  }.call(this, bestMove(puzzle)));
-};
-keyBrick = function(towerIndex){
-  var brick, fromBricks;
-  brick = {
-    depth: 1
-  };
-  fromBricks = this.towers[towerIndex].bricks;
-  while (brick.depth < fromBricks.length && brickInStack(fromBricks[brick.depth - 1], fromBricks[brick.depth])) {
-    brick.depth += 1;
+  debugger;
+  possibleNextSteps = bestMoves(puzzle);
+  i = 0;
+  while (i < possibleNextSteps.length) {
+    results$.push(findSolution(moveTower(puzzle, possibleNextSteps[i]), steps.concat(possibleNextSteps[i])));
   }
-  return brick;
+  return results$;
+};
+keyBrick = function(towerBricks){
+  var depth;
+  depth = 1;
+  while (depth < towerBricks.length && brickInStack(towerBricks[depth - 1], towerBricks[depth])) {
+    depth += 1;
+  }
+  towerBricks[depth - 1].depth = depth;
+  return towerBricks[depth - 1];
 };
 brickInStack = function(currentBrick, nextBrick){
   false;
@@ -64,10 +132,26 @@ brickInStack = function(currentBrick, nextBrick){
     return true;
   }
 };
+freeTowerPit = function(currentBrick, nextBrick){
+  if (nextBrick === void 8 && currentBrick.n === 6) {
+    return true;
+  }
+  return false;
+};
+subOptimalMove = function(currentBrick, nextBrick){
+  if (nextBrick === void 8) {
+    return true;
+  }
+  if (nextBrick.color === currentBrick.color && nextBrick.n > currentBrick.n) {
+    return true;
+  }
+  return false;
+};
 TowerLogic = function($scope){
   $scope.solving = 0;
-  $scope.maxPenalty = 25;
+  $scope.penaltyMax = 25;
   $scope.penaltyPoints = 0;
+  $scope.callCount = 0;
   $scope.solution = [];
   $scope.towers = [
     {
@@ -239,19 +323,21 @@ TowerLogic = function($scope){
     }
   ];
   $scope.solve = function(){
+    debugger;
     window.globalsBad = $scope;
     $scope.solving = 1;
     $scope.solution = [];
+    debugger;
     $scope.solved = function(it){
       return it.length;
     }(
-    findSolution(this.towers, []));
+    findSolution($scope.towers, []));
     return $scope.solving = 0;
   };
   $scope.aiMove = function(){
     var nextMove;
     nextMove = this.bestMove();
-    return $scope.moveBricks(nextMove.iFrom, nextMove.iTo);
+    return $scope.solution = moveBricks(nextMove.iFrom, nextMove.iTo);
   };
   $scope.bestMove = function(){
     return this.fake.shift();
@@ -347,14 +433,11 @@ TowerLogic = function($scope){
     $scope.towers[iTo].bricks = (function($_){
       return $_.splice(0, keyBrick($_).depth);
     }.call(this, $scope.towers[iFrom].bricks)).concat($scope.towers[iTo].bricks);
-    $scope.solution.push({
-      fromTower: iFrom,
-      toTower: iTo,
-      penalty: 0
-    });
-    return $scope.penaltyPoints = sum(map(function(it){
-      return it.penalty;
-    }($scope.solution)));
+    if (!this.solved) {
+      return $scope.penaltyPoints = sum(map(function(it){
+        return it.penalty;
+      }($scope.solution)));
+    }
   };
 };
 function import$(obj, src){
