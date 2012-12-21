@@ -95,7 +95,7 @@ isDoneOrEmpty = function(towerBricks){
 findSolution = function(puzzle, steps){
   var possibleNextSteps, i, results$ = [];
   window.globalsBad.callCount += 1;
-  if (window.globalsBad.solution !== [] && steps.length > window.globalsBad.solution.length) {
+  if (window.globalsBad.solution.length && steps.length > window.globalsBad.solution.length) {
     return;
   }
   if (window.globalsBad.penaltyMax < sum(map(function(it){
