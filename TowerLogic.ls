@@ -50,7 +50,7 @@ isDoneOrEmpty = (towerBricks) ->
 
 findSolution = (puzzle, steps) ->
   window.globalsBad.callCount += 1
-  return if window.globalsBad.solution is not [] and steps.length > window.globalsBad.solution.length
+  return if window.globalsBad.solution.length and steps.length > window.globalsBad.solution.length
   return if window.globalsBad.penaltyMax < sum map (.penalty), steps
   if map (.bricks), puzzle |> all isDoneOrEmpty
     window.globalsBad.solution = steps
